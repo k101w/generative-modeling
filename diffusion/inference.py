@@ -14,7 +14,9 @@ def get_fid(gen, dataset_name, dataset_resolution, z_dimension, batch_size, num_
     # diffusion model given z
     # Note: The output must be in the range [0, 255]!
     ##################################################################
-    gen_fn = None
+    def gen_fn(x):
+        return gen.sample_given_z(x, (batch_size, 3, 32, 32)) * 255
+
     ##################################################################
     #                          END OF YOUR CODE                      #
     ##################################################################

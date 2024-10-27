@@ -2,7 +2,8 @@ import argparse
 import torch
 from cleanfid import fid
 from matplotlib import pyplot as plt
-
+from torchvision.utils import save_image
+import numpy as np
 
 def save_plot(x, y, xlabel, ylabel, title, filename):
     plt.plot(x, y)
@@ -40,7 +41,27 @@ def interpolate_latent_space(gen, path):
     # 3. Save out an image holding all 100 samples.
     # Use torchvision.utils.save_image to save out the visualization.
     ##################################################################
-    pass
+    latent_vectors = []
+    interpolation_values = torch.linspace(-1, 1, 10)
+    for x in interpolation_values:
+        for y in interpolation_values:
+            z = torch.zeros(128)
+            z[0] = x
+            z[1] = y
+            latent_vectors.append(z)
+    
+    latent_vectors = torch.stack(latent_vectors).to('cuda')
+    with torch.no_grad(): 
+        generated_images = gen.forward_given_samples(latent_vectors)
+    
+    generated_images = (generated_images + 1) / 2
+    
+    save_image(
+    generated_images.data.float(),
+    path,
+    nrow=10,
+    )
+
     ##################################################################
     #                          END OF YOUR CODE                      #
     ##################################################################
@@ -50,3 +71,7 @@ def get_args():
     parser.add_argument("--disable_amp", action="store_true")
     args = parser.parse_args()
     return args
+
+
+if __name__ == '__main__':
+    interpolate_latent_space(None, '')
